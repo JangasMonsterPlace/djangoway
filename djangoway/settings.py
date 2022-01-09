@@ -25,12 +25,22 @@ SECRET_KEY = 'django-insecure-#+0-r&!gwd!g2ii^@h3nmc+$l8@t#5ijq3(94t5ts1(67ygj@z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+CORS_ORIGIN_ALLOW_ALL = True
+
+
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
+THIRD_PARTY_APPS = [
+    'rest_framework',
+]
 
-INSTALLED_APPS = [
+OUR_APPS = [
+    'preprocessor',
+]
+
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,8 +49,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+INSTALLED_APPS = THIRD_PARTY_APPS + OUR_APPS + DJANGO_APPS
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -121,3 +135,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': [
+            # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        ],
+        'DEFAULT_PERMISSION_CLASSES': [
+            # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'  
+        ],
+}
