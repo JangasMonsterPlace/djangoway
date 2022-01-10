@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,6 +35,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 THIRD_PARTY_APPS = [
     'rest_framework',
+    'django_celery_results',
 ]
 
 OUR_APPS = [
@@ -89,11 +91,13 @@ WSGI_APPLICATION = 'djangoway.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': os.environ.get('DB_HOST'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASS'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -145,3 +149,9 @@ REST_FRAMEWORK = {
             # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'  
         ],
 }
+
+
+# Celery Configuration Options
+CELERY_TIMEZONE = "Germany/Berlin"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
