@@ -50,6 +50,15 @@ class CSVViewset(viewsets.ModelViewSet):
         return Response(status=status.HTTP_201_CREATED)
 
 
+def make_groupquery_string(groups):
+    """
+    This function takes a list of groups and returns a string that can be used in a query
+    """
+    query_string = ''
+    for group in groups:
+        query_string += f"group={group}&" 
+    return query_string[:-1]
+
 
 @api_view(['GET'])
 def get_csv_list(request):
@@ -60,14 +69,8 @@ def get_csv_list(request):
 
 @api_view(['GET'])
 def get_date_range(request):
-    ## get all query param ## groups from the request
     query_params = request.query_params
-    groups = ''
-    for group in query_params.getlist('groups'):
-        print(group)
-        groups += f"&group={group}" 
-    print(groups)
-    print(f'https://us-central1-easy-as-pie-hackathon.cloudfunctions.net/get_source_date_range?{groups}&source_type=csv')
+    groups= make_groupquery_string(query_params.getlist('group'))
     r = requests.get(f'https://us-central1-easy-as-pie-hackathon.cloudfunctions.net/get_source_date_range?{groups}&source_type=csv')
     data = r.json()
     res = humps.camelize(data)
@@ -76,7 +79,11 @@ def get_date_range(request):
 
 @api_view(['GET'])
 def get_job_summary(request):
-    r = requests.get('https://us-central1-easy-as-pie-hackathon.cloudfunctions.net/get_review_count?group=disney&source_type=csv&min_date=2018-06-1&max_date=2019-04-02')
+    query_params = request.query_params
+    groups= make_groupquery_string(query_params.getlist('group'))
+    min_date = query_params.get('min_date')
+    max_date = query_params.get('max_date')
+    r = requests.get(f'https://us-central1-easy-as-pie-hackathon.cloudfunctions.net/get_review_count?{groups}&source_type=csv&min_date={min_date}&max_date={max_date}')
     data = r.json()
     res = humps.camelize(data)
     return Response(status=status.HTTP_200_OK, data=res)
