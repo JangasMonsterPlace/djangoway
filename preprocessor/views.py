@@ -57,3 +57,26 @@ def get_csv_list(request):
     data = r.json()
     res = humps.camelize(data)
     return Response(status=status.HTTP_200_OK, data=res)
+
+@api_view(['GET'])
+def get_date_range(request):
+    ## get all query param ## groups from the request
+    query_params = request.query_params
+    groups = ''
+    for group in query_params.getlist('groups'):
+        print(group)
+        groups += f"&group={group}" 
+    print(groups)
+    print(f'https://us-central1-easy-as-pie-hackathon.cloudfunctions.net/get_source_date_range?{groups}&source_type=csv')
+    r = requests.get(f'https://us-central1-easy-as-pie-hackathon.cloudfunctions.net/get_source_date_range?{groups}&source_type=csv')
+    data = r.json()
+    res = humps.camelize(data)
+    return Response(status=status.HTTP_200_OK, data=res)
+
+
+@api_view(['GET'])
+def get_job_summary(request):
+    r = requests.get('https://us-central1-easy-as-pie-hackathon.cloudfunctions.net/get_review_count?group=disney&source_type=csv&min_date=2018-06-1&max_date=2019-04-02')
+    data = r.json()
+    res = humps.camelize(data)
+    return Response(status=status.HTTP_200_OK, data=res)
