@@ -1,11 +1,17 @@
 # Base and Django imports
 # Third party imports
+from importlib.resources import path
+import requests
 from drf_spectacular.utils import extend_schema, PolymorphicProxySerializer
+from rest_framework.decorators import api_view
 from rest_framework import pagination, status, permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-import pandas as pd
 from rest_framework.parsers import JSONParser, FileUploadParser, MultiPartParser, FormParser
+
+import pandas as pd
+import humps
+
 # Local imports
 from .models import CSV
 from .serializers import GenericCSVSerializer 
@@ -42,3 +48,12 @@ class CSVViewset(viewsets.ModelViewSet):
 
         # Return the preprocessed data
         return Response(status=status.HTTP_201_CREATED)
+
+
+
+@api_view(['GET'])
+def get_csv_list(request):
+    r = requests.get('https://us-central1-easy-as-pie-hackathon.cloudfunctions.net/get_sources')
+    data = r.json()
+    res = humps.camelize(data)
+    return Response(status=status.HTTP_200_OK, data=res)
